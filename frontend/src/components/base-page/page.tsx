@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import { Helmet } from 'react-helmet';
 import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -86,7 +87,15 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const MainContainer: React.FunctionComponent = ({ children }) => {
+interface PageProps {
+  pageTitle: string;
+}
+
+export const Page: React.FunctionComponent<PageProps> = ({
+  // eslint-disable-next-line react/prop-types
+  children,
+  pageTitle,
+}) => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -113,6 +122,10 @@ export const MainContainer: React.FunctionComponent = ({ children }) => {
   return (
     <div className={classes.root}>
       <CssBaseline />
+      <Helmet>
+        <meta charSet="utf-8" />
+        <title>{pageTitle}</title>
+      </Helmet>
       <AppBar
         position="fixed"
         className={clsx(classes.appBar, {
@@ -209,6 +222,6 @@ export const MainContainer: React.FunctionComponent = ({ children }) => {
   );
 };
 
-MainContainer.propTypes = {
-  children: PropTypes.element.isRequired,
+Page.propTypes = {
+  pageTitle: PropTypes.string.isRequired,
 };
