@@ -24,6 +24,7 @@ module.exports = {
   },
   rules: {
     "no-prototype-builtins": "off",
+    "react/prop-types": 0,
     "import/prefer-default-export": "off",
     "import/no-default-export": "error",
     "react/destructuring-assignment": "off",

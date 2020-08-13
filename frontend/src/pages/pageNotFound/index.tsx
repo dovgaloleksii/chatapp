@@ -4,6 +4,7 @@ import Home from '@material-ui/icons/Home';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Page } from '../../components/base-page/page';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,14 +34,16 @@ const useStyles = makeStyles((theme: Theme) =>
 export const PageNotFound: React.FunctionComponent = () => {
   const classes = useStyles();
   return (
-    <Paper className={classes.paper}>
-      <div className={classes.container}>
-        <Typography variant="h4">404</Typography>
-        <Typography variant="subtitle1">Page not found</Typography>
-        <Button color="secondary" aria-label="home" href="/" className={classes.button}>
-          <Home />
-        </Button>
-      </div>
-    </Paper>
+    <Page pageTitle="Not found">
+      <Paper className={classes.paper}>
+        <div className={classes.container}>
+          <Typography variant="h4">404</Typography>
+          <Typography variant="subtitle1">Page not found</Typography>
+          <Button color="secondary" aria-label="home" href="/" className={classes.button}>
+            <Home />
+          </Button>
+        </div>
+      </Paper>
+    </Page>
   );
 };

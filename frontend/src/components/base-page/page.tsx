@@ -1,10 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { Helmet } from 'react-helmet';
 import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
@@ -13,15 +12,16 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import Lock from '@material-ui/icons/Lock';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import { useAuthContext } from '../auth/context';
 
 const drawerWidth = 240;
 
@@ -91,17 +91,13 @@ interface PageProps {
   pageTitle: string;
 }
 
-export const Page: React.FunctionComponent<PageProps> = ({
-  // eslint-disable-next-line react/prop-types
-  children,
-  pageTitle,
-}) => {
+export const Page: React.FunctionComponent<PageProps> = ({ children, pageTitle }) => {
   const classes = useStyles();
   const theme = useTheme();
+  const { isAuthenticated, logout } = useAuthContext();
   const [open, setOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
-  const auth = true;
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorEl(event.currentTarget);
@@ -121,7 +117,6 @@ export const Page: React.FunctionComponent<PageProps> = ({
 
   return (
     <div className={classes.root}>
-      <CssBaseline />
       <Helmet>
         <meta charSet="utf-8" />
         <title>{pageTitle}</title>
@@ -143,9 +138,9 @@ export const Page: React.FunctionComponent<PageProps> = ({
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            Photos
+            {pageTitle}
           </Typography>
-          {auth && (
+          {isAuthenticated && (
             <div>
               <IconButton
                 aria-label="account of current user"
@@ -171,7 +166,7 @@ export const Page: React.FunctionComponent<PageProps> = ({
                 open={openMenu}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Logout</MenuItem>
+                <MenuItem onClick={() => logout()}>Logout</MenuItem>
               </Menu>
             </div>
           )}
@@ -193,22 +188,26 @@ export const Page: React.FunctionComponent<PageProps> = ({
         </div>
         <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem component={Link} button to="/">
+            <ListItemIcon>
+              <MailIcon />
+            </ListItemIcon>
+            <ListItemText primary="Lending" />
+          </ListItem>
         </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
+        {!isAuthenticated && (
+          <>
+            <Divider />
+            <List>
+              <ListItem component={Link} button to="/login">
+                <ListItemIcon>
+                  <Lock />
+                </ListItemIcon>
+                <ListItemText primary="Log in" />
+              </ListItem>
+            </List>
+          </>
+        )}
       </Drawer>
       <main
         className={clsx(classes.content, {
@@ -220,8 +219,4 @@ export const Page: React.FunctionComponent<PageProps> = ({
       </main>
     </div>
   );
-};
-
-Page.propTypes = {
-  pageTitle: PropTypes.string.isRequired,
 };
