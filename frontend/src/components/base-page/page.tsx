@@ -206,6 +206,14 @@ export const Page: React.FunctionComponent<PageProps> = ({ children, pageTitle }
                 <ListItemText primary="Log in" />
               </ListItem>
             </List>
+            <List>
+              <ListItem component={Link} button to="/signup">
+                <ListItemIcon>
+                  <Lock />
+                </ListItemIcon>
+                <ListItemText primary="Sign up" />
+              </ListItem>
+            </List>
           </>
         )}
       </Drawer>

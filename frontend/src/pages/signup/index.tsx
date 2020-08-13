@@ -10,7 +10,9 @@ import { useAuthContext } from '../../components/auth/context';
 import { Page } from '../../components/base-page/page';
 import { FormContainer } from '../../components/form-container';
 
-const loginValidationSchema = yup.object({
+const signUpValidationSchema = yup.object({
+  firstName: yup.string().required(),
+  lastName: yup.string().required(),
   username: yup
     .string()
     .required()
@@ -20,22 +22,23 @@ const loginValidationSchema = yup.object({
     .required()
     .min(7),
 });
+type SignUpType = yup.InferType<typeof signUpValidationSchema>;
 
-type Login = yup.InferType<typeof loginValidationSchema>;
-
-const initialValues: Login = {
+const initialValues: SignUpType = {
   username: '',
+  firstName: '',
+  lastName: '',
   password: '',
 };
 
-export const Login: React.FunctionComponent = () => {
+export const SignUp: React.FunctionComponent = () => {
   const { login } = useAuthContext();
   const history = useHistory();
 
   return (
-    <Page pageTitle="Login">
+    <Page pageTitle="SignUp">
       <Formik
-        validationSchema={loginValidationSchema}
+        validationSchema={signUpValidationSchema}
         initialValues={initialValues}
         onSubmit={(...args) => {
           window.console.log(args);
@@ -48,14 +51,27 @@ export const Login: React.FunctionComponent = () => {
           <Form onSubmit={handleSubmit} onReset={handleReset}>
             <FormContainer>
               <Typography align="center" variant="h5">
-                Login
+                SignUp
               </Typography>
               <Field
                 component={TextField}
                 name="username"
                 label="Username"
                 variant="outlined"
-                autoComplete="current-username"
+                fullWidth
+              />
+              <Field
+                component={TextField}
+                name="firstName"
+                label="First name"
+                variant="outlined"
+                fullWidth
+              />
+              <Field
+                component={TextField}
+                name="lastName"
+                label="Last name"
+                variant="outlined"
                 fullWidth
               />
               <Field
@@ -63,12 +79,12 @@ export const Login: React.FunctionComponent = () => {
                 name="password"
                 label="Password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 variant="outlined"
                 fullWidth
               />
               <Button color="primary" variant="contained" type="submit" fullWidth>
-                Login
+                SignUp
               </Button>
             </FormContainer>
           </Form>
