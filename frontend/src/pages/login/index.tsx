@@ -9,6 +9,9 @@ import { TextField } from 'formik-material-ui';
 import { useAuthContext } from '../../components/auth/context';
 import { Page } from '../../components/base-page/page';
 import { FormContainer } from '../../components/form-container';
+import { FacebookOAuth } from '../../components/oauth/facebook';
+import { GoogleOAuth } from '../../components/oauth/google';
+import { LoginRequest } from '../../types';
 
 const loginValidationSchema = yup.object({
   username: yup
@@ -37,11 +40,32 @@ export const Login: React.FunctionComponent = () => {
       <Formik
         validationSchema={loginValidationSchema}
         initialValues={initialValues}
-        onSubmit={(...args) => {
-          window.console.log(args);
-          toast.info('Welcome');
-          login();
-          history.push('/');
+        onSubmit={(values, { setSubmitting, setFieldError }) => {
+          const { username, password } = values as LoginRequest;
+
+          return login
+            ? login(username, password)
+                .then(() => {
+                  toast.info('Welcome');
+                  setSubmitting(false);
+                  return history.push('/');
+                })
+                .catch((error: any) => {
+                  setSubmitting(false);
+                  if (error?.request?.response) {
+                    const { response } = error.request;
+                    const parsedResponse = JSON.parse(response);
+
+                    Reflect.ownKeys(parsedResponse).forEach((field) => {
+                      if (field === 'non_field_errors') {
+                        toast.error(parsedResponse[field][0]);
+                      } else if (typeof field === 'string') {
+                        setFieldError(field, parsedResponse[field]);
+                      }
+                    });
+                  }
+                })
+            : setSubmitting(false);
         }}
       >
         {({ handleReset, handleSubmit }) => (
@@ -70,6 +94,8 @@ export const Login: React.FunctionComponent = () => {
               <Button color="primary" variant="contained" type="submit" fullWidth>
                 Login
               </Button>
+              <FacebookOAuth />
+              <GoogleOAuth />
             </FormContainer>
           </Form>
         )}

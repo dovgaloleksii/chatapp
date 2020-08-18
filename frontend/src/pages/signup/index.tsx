@@ -9,6 +9,7 @@ import { TextField } from 'formik-material-ui';
 import { useAuthContext } from '../../components/auth/context';
 import { Page } from '../../components/base-page/page';
 import { FormContainer } from '../../components/form-container';
+import { LoginRequest } from '../../types';
 
 const signUpValidationSchema = yup.object({
   firstName: yup.string().required(),
@@ -40,11 +41,21 @@ export const SignUp: React.FunctionComponent = () => {
       <Formik
         validationSchema={signUpValidationSchema}
         initialValues={initialValues}
-        onSubmit={(...args) => {
-          window.console.log(args);
-          toast.info('Welcome');
-          login();
-          history.push('/');
+        onSubmit={(values, { setSubmitting }) => {
+          const { username, password } = values as LoginRequest;
+
+          return login
+            ? login(username, password)
+                .then(() => {
+                  toast.info('Welcome');
+                  setSubmitting(false);
+                  return history.push('/');
+                })
+                .catch((error: unknown) => {
+                  setSubmitting(false);
+                  toast.error(String(error));
+                })
+            : setSubmitting(false);
         }}
       >
         {({ handleReset, handleSubmit }) => (

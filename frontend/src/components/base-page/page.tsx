@@ -15,6 +15,7 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import Lock from '@material-ui/icons/Lock';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Button from '@material-ui/core/Button';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -94,7 +95,7 @@ interface PageProps {
 export const Page: React.FunctionComponent<PageProps> = ({ children, pageTitle }) => {
   const classes = useStyles();
   const theme = useTheme();
-  const { isAuthenticated, logout } = useAuthContext();
+  const { isAuthenticated, user, logout } = useAuthContext();
   const [open, setOpen] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -142,15 +143,16 @@ export const Page: React.FunctionComponent<PageProps> = ({ children, pageTitle }
           </Typography>
           {isAuthenticated && (
             <div>
-              <IconButton
+              <Button
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleMenu}
                 color="inherit"
+                startIcon={<AccountCircle />}
               >
-                <AccountCircle />
-              </IconButton>
+                {user?.firstName} {user?.lastName}
+              </Button>
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}

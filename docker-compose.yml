@@ -1,0 +1,61 @@
+version: '3.7'
+
+services:
+
+  backend:
+    container_name: chatapp-backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    networks:
+      - main
+    command: ["sh", "-c", "python manage.py migrate --noinput && uvicorn --port 8000 chatapp.asgi:application"]
+    depends_on:
+      - redis
+      - db
+    restart: always
+
+  redis:
+    image: redis:latest
+    container_name: chatapp-redis
+    networks:
+      - main
+    volumes:
+      - redis-data:/data
+    restart: always
+    ports:
+      - 6379:6379
+
+  db:
+    image: postgres:alpine
+    container_name: chatapp-db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=chatapp
+      - POSTGRES_PASSWORD=chatapp
+      - POSTGRES_DB=chatapp
+    ports:
+      - 5432:5432
+    networks:
+      - main
+    restart: always
+
+  # Load initial data db:
+  # Download or create new dump
+  # pg_dump --username=<username> --port=<port> --host=<host> --dbname=<db_name> > /var/lib/postgresql/data/dumps
+  # - Download dump from current server
+  # docker cp ./<dump_name> <container_name>:/var/lib/postgresql/data/dumps
+  # docker exec -ti <container_name> bash
+  # pg_restore -U chatapp -d chatapp /var/lib/postgresql/data/dumps
+  # psql -U chatapp -d chatapp < /var/lib/postgresql/data/dumps
+
+networks:
+  main:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
+  redis-data:
+    driver: local
