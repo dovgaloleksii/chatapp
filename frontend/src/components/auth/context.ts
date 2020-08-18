@@ -4,6 +4,7 @@ import { OAuthProvider } from '../../types';
 
 export interface User {
   email: string;
+  logo: string;
   firstName: string;
   lastName: string;
 }
@@ -29,6 +30,7 @@ export const AuthContext = React.createContext<AuthContextValue>({
   api: undefined,
   user: {
     email: '',
+    logo: '',
     firstName: '',
     lastName: '',
   },

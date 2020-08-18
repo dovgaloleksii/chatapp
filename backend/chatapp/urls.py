@@ -45,6 +45,6 @@ urlpatterns = [
         'redoc/',
         schema_view.with_ui('redoc', cache_timeout=0),
         name='schema-redoc'),
-    path('api/auth/', include('core.urls'), name='auth'),
+    path('api/auth/', include('core.urls')),
     path('admin/', admin.site.urls),
 ]

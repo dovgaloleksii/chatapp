@@ -154,6 +154,11 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True,
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3600),
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(seconds=3600 * 3),
+}
+
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'core.serializers.UserDetailsSerializer',
 }
 
 ASGI_APPLICATION = "chatapp.routing.application"

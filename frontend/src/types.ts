@@ -40,6 +40,7 @@ export interface UserResponse {
   pk: number;
   username: string;
   email: string;
+  logo: string;
   first_name: string;
   last_name: string;
 }

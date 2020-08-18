@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import * as yup from 'yup';
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-material-ui';
+import { AxiosError } from 'axios';
 import { useAuthContext } from '../../components/auth/context';
 import { Page } from '../../components/base-page/page';
 import { FormContainer } from '../../components/form-container';
@@ -50,9 +51,9 @@ export const Login: React.FunctionComponent = () => {
                   setSubmitting(false);
                   return history.push('/');
                 })
-                .catch((error: any) => {
+                .catch((error: AxiosError) => {
                   setSubmitting(false);
-                  if (error?.request?.response) {
+                  if ('request' in error && error?.request?.response) {
                     const { response } = error.request;
                     const parsedResponse = JSON.parse(response);
 
