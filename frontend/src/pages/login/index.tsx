@@ -13,6 +13,7 @@ import { FormContainer } from '../../components/form-container';
 import { FacebookOAuth } from '../../components/oauth/facebook';
 import { GoogleOAuth } from '../../components/oauth/google';
 import { LoginRequest } from '../../types';
+import { notifyError } from '../../utils';
 
 const loginValidationSchema = yup.object({
   username: yup
@@ -22,7 +23,7 @@ const loginValidationSchema = yup.object({
   password: yup
     .string()
     .required()
-    .min(7),
+    .min(8),
 });
 
 type Login = yup.InferType<typeof loginValidationSchema>;
@@ -53,18 +54,7 @@ export const Login: React.FunctionComponent = () => {
                 })
                 .catch((error: AxiosError) => {
                   setSubmitting(false);
-                  if ('request' in error && error?.request?.response) {
-                    const { response } = error.request;
-                    const parsedResponse = JSON.parse(response);
-
-                    Reflect.ownKeys(parsedResponse).forEach((field) => {
-                      if (field === 'non_field_errors') {
-                        toast.error(parsedResponse[field][0]);
-                      } else if (typeof field === 'string') {
-                        setFieldError(field, parsedResponse[field]);
-                      }
-                    });
-                  }
+                  notifyError(error, setFieldError);
                 })
             : setSubmitting(false);
         }}

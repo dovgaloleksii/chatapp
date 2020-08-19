@@ -36,6 +36,10 @@ export interface LoginResponse {
   token: string;
 }
 
+export interface LogoutResponse {
+  detail: string;
+}
+
 export interface UserResponse {
   pk: number;
   username: string;

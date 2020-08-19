@@ -6,6 +6,7 @@ import {
   UserResponse,
   LoginResponse,
   OAuthLoginRequest,
+  LogoutResponse,
 } from '../../types';
 
 export abstract class AbstractAPI {
@@ -20,6 +21,8 @@ export abstract class AbstractAPI {
   abstract login(request: LoginRequest): Promise<AxiosResponse<LoginResponse>>;
 
   abstract oauthLogin(request: OAuthLoginRequest): Promise<AxiosResponse<LoginResponse>>;
+
+  abstract logout(): Promise<AxiosResponse<LogoutResponse>>;
 
   abstract getUser(): Promise<AxiosResponse<UserResponse>>;
 }

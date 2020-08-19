@@ -7,6 +7,7 @@ import {
   LoginResponse,
   UserResponse,
   OAuthLoginRequest,
+  LogoutResponse,
 } from '../../types';
 
 export class DjangoAPI extends AbstractAPI {
@@ -40,6 +41,13 @@ export class DjangoAPI extends AbstractAPI {
       url: 'api/auth/token/',
       method: 'POST',
       data: request,
+    });
+  }
+
+  logout(): Promise<AxiosResponse<LogoutResponse>> {
+    return this.apiCall({
+      url: 'api/auth/logout/',
+      method: 'POST',
     });
   }
 

@@ -4,6 +4,7 @@ import jwtDecode from 'jwt-decode';
 import { AuthContext, User } from './context';
 import { getApi } from '../api';
 import { OAuthProvider } from '../../types';
+import { notifyError } from '../../utils';
 
 const API_PROVIDER = 'django';
 
@@ -12,11 +13,21 @@ export const ProvideAuth: React.FunctionComponent = ({ children }) => {
   const [token, setToken] = React.useState(localStorage.getItem('accessToken') || '');
   const isAuthenticated = Boolean(token);
   const [api, setApi] = React.useState(getApi(API_PROVIDER, { token }));
+
   const logout = React.useCallback(() => {
-    setToken('');
-    setUser(null);
-    localStorage.removeItem('accessToken');
-  }, []);
+    return api
+      .logout()
+      .then(({ data: { detail } }) => {
+        toast.info(detail);
+        return detail;
+      })
+      .catch(notifyError)
+      .finally(() => {
+        setToken('');
+        setUser(null);
+        localStorage.removeItem('accessToken');
+      });
+  }, [api]);
 
   const getUser = React.useCallback((): void => {
     if (api.token) {
@@ -31,7 +42,7 @@ export const ProvideAuth: React.FunctionComponent = ({ children }) => {
           });
           return data;
         })
-        .catch(toast.error);
+        .catch(notifyError);
     }
   }, [api]);
 

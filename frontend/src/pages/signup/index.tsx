@@ -21,7 +21,8 @@ const signUpValidationSchema = yup.object({
   password: yup
     .string()
     .required()
-    .min(7),
+    .min(8),
+  repeatPassword: yup.string().oneOf([yup.ref('password'), ''], 'Passwords must match'),
 });
 type SignUpType = yup.InferType<typeof signUpValidationSchema>;
 
@@ -30,6 +31,7 @@ const initialValues: SignUpType = {
   firstName: '',
   lastName: '',
   password: '',
+  repeatPassword: '',
 };
 
 export const SignUp: React.FunctionComponent = () => {
@@ -67,7 +69,7 @@ export const SignUp: React.FunctionComponent = () => {
               <Field
                 component={TextField}
                 name="username"
-                label="Username"
+                label="Email"
                 variant="outlined"
                 fullWidth
               />
@@ -89,6 +91,15 @@ export const SignUp: React.FunctionComponent = () => {
                 component={TextField}
                 name="password"
                 label="Password"
+                type="password"
+                autoComplete="new-password"
+                variant="outlined"
+                fullWidth
+              />
+              <Field
+                component={TextField}
+                name="repeatPassword"
+                label="Repeat password"
                 type="password"
                 autoComplete="new-password"
                 variant="outlined"
