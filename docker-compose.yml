@@ -50,6 +50,23 @@ services:
   # pg_restore -U chatapp -d chatapp /var/lib/postgresql/data/dumps
   # psql -U chatapp -d chatapp < /var/lib/postgresql/data/dumps
 
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: chatapp-mailhog
+    restart: always
+    ports:
+      - 1025:1025
+      - 8025:8025
+
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 10000:8080
+
 networks:
   main:
     driver: bridge

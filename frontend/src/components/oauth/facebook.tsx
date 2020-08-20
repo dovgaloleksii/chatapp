@@ -10,6 +10,11 @@ import clsx from 'clsx';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { useAuthContext } from '../auth/context';
+import { notifyError } from '../../utils';
+
+interface FacebookOAuthProps {
+  isSignUp?: boolean;
+}
 
 const fbAppId = process.env.REACT_APP_FB_APP_ID;
 const xfbml = true;
@@ -34,7 +39,9 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export const FacebookOAuth: React.FunctionComponent = () => {
+export const FacebookOAuth: React.FunctionComponent<FacebookOAuthProps> = ({
+  isSignUp = false,
+}) => {
   const { oauthLogin } = useAuthContext();
   const history = useHistory();
   const classes = useStyles();
@@ -46,7 +53,7 @@ export const FacebookOAuth: React.FunctionComponent = () => {
           toast.info('Welcome from google!');
           return history.push('/');
         })
-        .catch(toast.error);
+        .catch(notifyError);
     }
   };
 
@@ -74,13 +81,15 @@ export const FacebookOAuth: React.FunctionComponent = () => {
       <FacebookLogin
         appId={process.env.REACT_APP_FB_APP_ID || ''}
         autoLoad={false}
-        fields="name,email,picture"
+        fields="name"
+        scope="public_profile,user_birthday,user_gender,user_photos,email,user_link"
         version={fbVersion.slice(1)}
         xfbml={xfbml}
         cookie
         language="en_US"
         callback={onLogin}
         onFailure={onFailure}
+        textButton={isSignUp ? 'SignUp with Facebook' : 'LogIn with Facebook'}
         cssClass={clsx(
           classes.fbButton,
           'MuiButtonBase-root',

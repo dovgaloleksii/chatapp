@@ -4,9 +4,10 @@ import {
   APIConfig,
   LoginRequest,
   UserResponse,
-  LoginResponse,
+  TokenResponse,
   OAuthLoginRequest,
-  LogoutResponse,
+  StatusDetailResponse,
+  SignUpRequest,
 } from '../../types';
 
 export abstract class AbstractAPI {
@@ -18,11 +19,13 @@ export abstract class AbstractAPI {
 
   abstract apiCall(requestConfig: RequestConfig): Promise<AxiosResponse>;
 
-  abstract login(request: LoginRequest): Promise<AxiosResponse<LoginResponse>>;
+  abstract login(request: LoginRequest): Promise<AxiosResponse<TokenResponse>>;
 
-  abstract oauthLogin(request: OAuthLoginRequest): Promise<AxiosResponse<LoginResponse>>;
+  abstract signUp(request: SignUpRequest): Promise<AxiosResponse<StatusDetailResponse>>;
 
-  abstract logout(): Promise<AxiosResponse<LogoutResponse>>;
+  abstract oauthLogin(request: OAuthLoginRequest): Promise<AxiosResponse<TokenResponse>>;
+
+  abstract logout(): Promise<AxiosResponse<StatusDetailResponse>>;
 
   abstract getUser(): Promise<AxiosResponse<UserResponse>>;
 }

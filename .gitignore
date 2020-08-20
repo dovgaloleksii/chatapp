@@ -154,3 +154,5 @@ yarn-debug.log*
 yarn-error.log*
 
 frontend/yarn.lock
+
+backend/media/

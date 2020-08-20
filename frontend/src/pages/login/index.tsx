@@ -7,6 +7,9 @@ import * as yup from 'yup';
 import { Field, Form, Formik } from 'formik';
 import { TextField } from 'formik-material-ui';
 import { AxiosError } from 'axios';
+import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
 import { useAuthContext } from '../../components/auth/context';
 import { Page } from '../../components/base-page/page';
 import { FormContainer } from '../../components/form-container';
@@ -14,6 +17,7 @@ import { FacebookOAuth } from '../../components/oauth/facebook';
 import { GoogleOAuth } from '../../components/oauth/google';
 import { LoginRequest } from '../../types';
 import { notifyError } from '../../utils';
+import { LinkBehavior } from '../../components/styled/link';
 
 const loginValidationSchema = yup.object({
   username: yup
@@ -87,6 +91,12 @@ export const Login: React.FunctionComponent = () => {
               </Button>
               <FacebookOAuth />
               <GoogleOAuth />
+              <Divider className="w-100" />
+              <Grid item xs={12} container justify="center">
+                <Link component={LinkBehavior} href="/signup/">
+                  <Typography variant="body2">Sign Up for an account</Typography>
+                </Link>
+              </Grid>
             </FormContainer>
           </Form>
         )}

@@ -27,16 +27,24 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface SignUpRequest {
+  username: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  repeatPassword: string;
+}
+
 export interface OAuthLoginRequest {
   accessToken: string;
   provider: OAuthProvider;
 }
 
-export interface LoginResponse {
+export interface TokenResponse {
   token: string;
 }
 
-export interface LogoutResponse {
+export interface StatusDetailResponse {
   detail: string;
 }
 

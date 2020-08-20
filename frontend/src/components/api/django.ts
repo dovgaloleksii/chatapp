@@ -4,10 +4,11 @@ import {
   RequestConfig,
   APIConfig,
   LoginRequest,
-  LoginResponse,
+  TokenResponse,
   UserResponse,
   OAuthLoginRequest,
-  LogoutResponse,
+  StatusDetailResponse,
+  SignUpRequest,
 } from '../../types';
 
 export class DjangoAPI extends AbstractAPI {
@@ -36,7 +37,7 @@ export class DjangoAPI extends AbstractAPI {
     return this.api.request(requestConfig);
   }
 
-  login(request: LoginRequest): Promise<AxiosResponse<LoginResponse>> {
+  login(request: LoginRequest): Promise<AxiosResponse<TokenResponse>> {
     return this.apiCall({
       url: 'api/auth/token/',
       method: 'POST',
@@ -44,14 +45,30 @@ export class DjangoAPI extends AbstractAPI {
     });
   }
 
-  logout(): Promise<AxiosResponse<LogoutResponse>> {
+  signUp(request: SignUpRequest): Promise<AxiosResponse<StatusDetailResponse>> {
+    return this.apiCall({
+      url: 'api/auth/registration/',
+      method: 'POST',
+      data: {
+        email: request.username,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        first_name: request.firstName,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        last_name: request.lastName,
+        password1: request.password,
+        password2: request.repeatPassword,
+      },
+    });
+  }
+
+  logout(): Promise<AxiosResponse<StatusDetailResponse>> {
     return this.apiCall({
       url: 'api/auth/logout/',
       method: 'POST',
     });
   }
 
-  oauthLogin(request: OAuthLoginRequest): Promise<AxiosResponse<LoginResponse>> {
+  oauthLogin(request: OAuthLoginRequest): Promise<AxiosResponse<TokenResponse>> {
     return this.apiCall({
       url: `api/auth/${request.provider}/`,
       method: 'POST',

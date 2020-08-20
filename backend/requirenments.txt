@@ -11,4 +11,5 @@ drf-yasg==1.17.1
 Pillow==7.2.0
 psycopg2-binary==2.8.5
 requests==2.24.0
+Twisted[tls,http2]==20.3.0
 uvicorn==0.11.8

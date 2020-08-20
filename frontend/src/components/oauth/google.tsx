@@ -7,6 +7,11 @@ import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import { GoogleIcon } from '../icons/google';
 import { useAuthContext } from '../auth/context';
+import { notifyError } from '../../utils';
+
+interface GoogleOAuthProps {
+  isSignUp?: boolean;
+}
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -16,7 +21,7 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export const GoogleOAuth: React.FunctionComponent = () => {
+export const GoogleOAuth: React.FunctionComponent<GoogleOAuthProps> = ({ isSignUp = false }) => {
   const classes = useStyles();
   const { oauthLogin } = useAuthContext();
   const history = useHistory();
@@ -28,7 +33,7 @@ export const GoogleOAuth: React.FunctionComponent = () => {
           toast.info('Welcome from google!');
           return history.push('/');
         })
-        .catch(toast.error);
+        .catch(notifyError);
     }
   };
 
@@ -53,7 +58,7 @@ export const GoogleOAuth: React.FunctionComponent = () => {
           color="inherit"
           startIcon={<GoogleIcon />}
         >
-          Login with Google
+          {isSignUp ? 'SignUp with Google' : 'LogIn with Google'}
         </Button>
       )}
     />

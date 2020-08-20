@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 
 class User(AbstractUser):
     email = models.EmailField(_('email address'), unique=True, db_index=True, blank=True)
-    logo = models.ImageField(null=True, blank=True)
+    logo = models.ImageField(upload_to='user_logo', null=True, blank=True)
     updated = models.DateTimeField(_('Updated'), auto_now=True)
 
     class Meta:

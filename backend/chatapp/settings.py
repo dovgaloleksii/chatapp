@@ -43,14 +43,20 @@ INSTALLED_APPS = [
     'drf_yasg',
     'channels',
     'corsheaders',
-
+    'django_json_widget',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.google',
+    'rest_auth.registration',
+    'chatapp',
     'core',
 ]
+
+EMAIL_HOST = "0.0.0.0"
+EMAIL_PORT = 1025
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = False
 
 SITE_ID = 1
 
@@ -88,7 +94,34 @@ TEMPLATES = [
 WSGI_APPLICATION = 'chatapp.wsgi.application'
 AUTH_USER_MODEL = 'core.User'
 
+
+# Auth settings
 REST_USE_JWT = True
+
+LOGIN_URL = '/admin/login/'
+LOGOUT_URL = '/admin/logout/'
+
+ACCOUNT_ADAPTER = 'core.adapter.RestAccountAdapter'
+ACCOUNT_EMAIL_SUBJECT_PREFIX = '[Chatapp]'
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+
+JWT_AUTH = {
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3600),
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(seconds=3600 * 3),
+}
+
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'core.serializers.UserDetailsSerializer',
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'core.serializers.RegisterSerializer',
+}
+
+SOCIALACCOUNT_ADAPTER = 'core.adapter.RestSocialAccountAdapter'
 SOCIALACCOUNT_QUERY_EMAIL = True
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -106,11 +139,26 @@ SOCIALACCOUNT_PROVIDERS = {
     },
     'facebook': {
         'SCOPE': [
-            'name',
+            'public_profile',
+            'user_birthday',
+            'user_gender',
+            'user_photos',
             'email',
-            'picture.type(large)',
             'user_link',
         ],
+        'FIELDS': [
+            'id',
+            'first_name',
+            'last_name',
+            'email',
+            'picture',
+            'photos',
+            'link',
+            'gender',
+            'birthday',
+        ],
+        'LOCALE_FUNC': lambda request: 'en_US',
+        'VERSION': 'v8.0',
         'APP': {
             'secret': os.environ.get('FACEBOOK_SECRET', ''),
             'key':  os.environ.get('FACEBOOK_KEY', ''),
@@ -149,16 +197,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
-}
-
-JWT_AUTH = {
-    'JWT_ALLOW_REFRESH': True,
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3600),
-    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(seconds=3600 * 3),
-}
-
-REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'core.serializers.UserDetailsSerializer',
 }
 
 ASGI_APPLICATION = "chatapp.routing.application"
@@ -209,3 +247,75 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MAIN_LOG_LEVEL = 'DEBUG' if DEBUG else 'INFO'
+SERVICE_LOG_LEVEL = 'INFO' if DEBUG else 'WARNING'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s '
+                      '%(funcName)s %(lineno)d %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'chatapp': {
+            'level': MAIN_LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'core': {
+            'level': MAIN_LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'django': {
+            'level': SERVICE_LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'django.server': {
+            'level': SERVICE_LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'asyncio': {
+            'level': SERVICE_LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'channels': {
+            'level': SERVICE_LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'channels_redis': {
+            'level': SERVICE_LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'daphne': {
+            'level': SERVICE_LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'uvicorn': {
+            'level': SERVICE_LOG_LEVEL,
+            'handlers': ['console'],
+            'propagate': False,
+        },
+    },
+}
