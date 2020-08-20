@@ -61,6 +61,16 @@ export class DjangoAPI extends AbstractAPI {
     });
   }
 
+  confirmEmail(key: string): Promise<AxiosResponse<StatusDetailResponse>> {
+    return this.apiCall({
+      url: 'api/auth/registration/verify-email/',
+      method: 'POST',
+      data: {
+        key,
+      },
+    });
+  }
+
   logout(): Promise<AxiosResponse<StatusDetailResponse>> {
     return this.apiCall({
       url: 'api/auth/logout/',

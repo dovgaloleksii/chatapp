@@ -25,6 +25,8 @@ export abstract class AbstractAPI {
 
   abstract oauthLogin(request: OAuthLoginRequest): Promise<AxiosResponse<TokenResponse>>;
 
+  abstract confirmEmail(key: string): Promise<AxiosResponse<StatusDetailResponse>>;
+
   abstract logout(): Promise<AxiosResponse<StatusDetailResponse>>;
 
   abstract getUser(): Promise<AxiosResponse<UserResponse>>;

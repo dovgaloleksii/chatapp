@@ -15,6 +15,8 @@ export const notifyError = (
     Reflect.ownKeys(parsedResponse).forEach((field) => {
       if (field === 'non_field_errors') {
         toast.error(parsedResponse[field][0]);
+      } else if (field === 'detail') {
+        toast.error(parsedResponse[field]);
       } else if (typeof field === 'string' && setFieldError) {
         const fieldName = fieldMap[field] || field;
         setFieldError(fieldName, parsedResponse[field]);
