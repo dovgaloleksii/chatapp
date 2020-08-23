@@ -13,13 +13,11 @@ ENV PYTHONUNBUFFERED 1
 RUN apk update \
     && apk add postgresql-dev gcc build-base python3-dev musl-dev jpeg-dev zlib-dev libffi-dev
 
-#git bash libffi-dev py2-pip openssl python-dev py-pip
-
 RUN pip install --upgrade pip
 
-COPY ./requirements.txt .
+COPY requirements.txt .
 
-RUN pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r requirements.txt
+RUN pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r /usr/src/app/requirements.txt
 
 #########
 # FINAL #

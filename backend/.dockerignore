@@ -1,0 +1,11 @@
+.git
+.cache
+__pycache__
+*.md
+!README*.md
+.gitignore
+*.pyc
+.DS_Store
+.dockerignore
+/ioteelab/static
+/ioteelab/staticfiles

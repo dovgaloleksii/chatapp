@@ -5,7 +5,7 @@ services:
   backend:
     container_name: chatapp-backend
     build:
-      context: .
+      context: ./backend
       dockerfile: backend/Dockerfile
     networks:
       - main
@@ -13,6 +13,19 @@ services:
     depends_on:
       - redis
       - db
+    restart: always
+
+  frontend:
+    container_name: chatapp-frontend
+    build:
+      context: ./frontend
+      dockerfile: frontend/Dockerfile
+    networks:
+      - main
+    volumes:
+      - '.:/frontend'
+      - '/frontend/node_modules'
+    command: ["sh", "-c", "npm start"]
     restart: always
 
   redis:
