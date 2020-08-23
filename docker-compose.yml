@@ -6,27 +6,28 @@ services:
     container_name: chatapp-backend
     build:
       context: ./backend
-      dockerfile: backend/Dockerfile
     networks:
       - main
-    command: ["sh", "-c", "python manage.py migrate --noinput && uvicorn --port 8000 chatapp.asgi:application"]
+    command: ["sh", "-c", "python manage.py migrate --noinput && uvicorn --port 8000 --host 0.0.0.0 chatapp.asgi:application"]
+    environment:
+      - DATABASE_HOST=db
     depends_on:
       - redis
       - db
     restart: always
+    ports:
+      - 8000:8000
 
   frontend:
     container_name: chatapp-frontend
     build:
       context: ./frontend
-      dockerfile: frontend/Dockerfile
     networks:
       - main
-    volumes:
-      - '.:/frontend'
-      - '/frontend/node_modules'
-    command: ["sh", "-c", "npm start"]
+    command: ["sh", "-c", "serve -s build -p 8080 -d"]
     restart: always
+    ports:
+      - 8080:8080
 
   redis:
     image: redis:latest

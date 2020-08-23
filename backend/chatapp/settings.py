@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'channels',
+    'storages',
     'corsheaders',
     'django_json_widget',
     'allauth',
@@ -245,17 +246,25 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-DEFAULT_FILE_STORAGE = 'cgatapp.storages.MediaStorage'
+DEFAULT_FILE_STORAGE = 'chatapp.storages.MediaStorage'
 STATICFILES_STORAGE = 'chatapp.storages.StaticStorage'
 
-AWS_S3_FILE_OVERWRITE = False
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
-AWS_STORAGE_BUCKET_NAME = 'chatapp'
+AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME", '')
+AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+AWS_S3_SECURE_URLS = True
+AWS_QUERYSTRING_AUTH = False
+AWS_DEFAULT_ACL = 'public-read'
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
+# Logging
 MAIN_LOG_LEVEL = 'DEBUG' if DEBUG else 'INFO'
 SERVICE_LOG_LEVEL = 'INFO' if DEBUG else 'WARNING'
 LOGGING = {

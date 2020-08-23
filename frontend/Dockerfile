@@ -4,9 +4,10 @@ WORKDIR .
 ENV PATH ./node_modules/.bin:$PATH
 
 COPY package.json ./
-COPY package-lock.json ./
 
-RUN npm install --silent
-RUN npm install react-scripts -g --silent
+RUN yarn --silent
+RUN yarn global add --silent react-scripts serve
 
 COPY . ./
+
+RUN yarn build

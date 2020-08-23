@@ -15,9 +15,9 @@ RUN apk update \
 
 RUN pip install --upgrade pip
 
-COPY requirements.txt .
+COPY ./requirements.txt .
 
-RUN pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r /usr/src/app/requirements.txt
+RUN pip wheel --no-cache-dir --wheel-dir /usr/src/app/wheels -r requirements.txt
 
 #########
 # FINAL #
@@ -48,4 +48,4 @@ RUN pip install --no-cache /wheels/*
 RUN rm -rf /wheels
 
 # copy project
-COPY .. $APP_HOME
+COPY . $APP_HOME

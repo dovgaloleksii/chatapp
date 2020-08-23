@@ -7,5 +7,3 @@ __pycache__
 *.pyc
 .DS_Store
 .dockerignore
-/ioteelab/static
-/ioteelab/staticfiles

@@ -1,11 +1,8 @@
 .git
 .cache
-__pycache__
 *.md
 !README*.md
 .gitignore
-*.pyc
+node_modules
 .DS_Store
 .dockerignore
-/ioteelab/static
-/ioteelab/staticfiles
