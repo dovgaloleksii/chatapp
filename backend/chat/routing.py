@@ -4,7 +4,7 @@ from .consumers import ChatConsumer
 
 websockets = URLRouter([
     path(
-        "ws/live-score/<int:game_id>", ChatConsumer,
+        "ws/chat/", ChatConsumer,
         name="live-score",
     ),
 ])

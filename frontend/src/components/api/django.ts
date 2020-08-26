@@ -10,6 +10,7 @@ import {
   StatusDetailResponse,
   SignUpRequest,
 } from '../../types';
+import { BASE_URL } from '../../constants';
 
 export class DjangoAPI extends AbstractAPI {
   api: AxiosInstance;
@@ -18,7 +19,7 @@ export class DjangoAPI extends AbstractAPI {
     super(config);
 
     const axiosConfig = {
-      baseURL: process.env.REACT_APP_API_URL || '/',
+      baseURL: BASE_URL,
       timeout: 1000,
       headers: {},
     };

@@ -50,7 +50,7 @@ export const FacebookOAuth: React.FunctionComponent<FacebookOAuthProps> = ({
     if (oauthLogin) {
       oauthLogin(userInfo.accessToken, 'facebook')
         .then(() => {
-          toast.info('Welcome from google!');
+          toast.info('Welcome from facebook!');
           return history.push('/');
         })
         .catch(notifyError);

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'rest_auth.registration',
     'chatapp',
     'core',
+    'chat',
 ]
 
 EMAIL_HOST = "0.0.0.0"
@@ -205,7 +206,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [os.environ.get('CHANNEL_REDIS_HOST', '127.0.0.1:6379')],
+            "hosts": [os.environ.get('CHANNEL_REDIS_HOST', '127.0.0.1:6379').split(':')],
         },
     },
 }

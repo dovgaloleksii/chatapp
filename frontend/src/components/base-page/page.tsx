@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { Helmet } from 'react-helmet';
 import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
+import { toast } from 'react-toastify';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -11,6 +14,8 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import Avatar from '@material-ui/core/Avatar';
+import MUILink from '@material-ui/core/Link';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import Lock from '@material-ui/icons/Lock';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -19,12 +24,44 @@ import Button from '@material-ui/core/Button';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import MailIcon from '@material-ui/icons/Mail';
+import HomeIcon from '@material-ui/icons/Home';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { useAuthContext } from '../auth/context';
+import { LinkBehavior } from '../styled/link';
+import { WSClient } from '../websocket';
 
 const drawerWidth = 240;
+
+const UnAuthorisedMenu: React.FunctionComponent = () => (
+  <>
+    <List>
+      <ListItem component={Link} button to="/">
+        <ListItemIcon>
+          <HomeIcon />
+        </ListItemIcon>
+        <ListItemText primary="Home" />
+      </ListItem>
+    </List>
+    <Divider />
+    <List>
+      <ListItem component={Link} button to="/login">
+        <ListItemIcon>
+          <Lock />
+        </ListItemIcon>
+        <ListItemText primary="Log in" />
+      </ListItem>
+    </List>
+    <List>
+      <ListItem component={Link} button to="/signup">
+        <ListItemIcon>
+          <Lock />
+        </ListItemIcon>
+        <ListItemText primary="Sign up" />
+      </ListItem>
+    </List>
+  </>
+);
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -85,19 +122,46 @@ const useStyles = makeStyles((theme: Theme) =>
       }),
       marginLeft: 0,
     },
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 1,
+      color: '#fff',
+    },
   }),
 );
 
 interface PageProps {
   pageTitle: string;
+  loading?: boolean;
 }
 
-export const Page: React.FunctionComponent<PageProps> = ({ children, pageTitle }) => {
+export const Page: React.FunctionComponent<PageProps> = ({
+  children,
+  pageTitle,
+  loading = false,
+}) => {
   const classes = useStyles();
   const theme = useTheme();
-  const { isAuthenticated, user, logout } = useAuthContext();
+  const { isAuthenticated, user, logout, token } = useAuthContext();
   const [open, setOpen] = React.useState(false);
+  const [selLoading, setSelfLoading] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      setSelfLoading(true);
+      WSClient.token = token;
+      WSClient.connect((message) => {
+        const messageData = JSON.parse(message.data);
+        toast.dark(messageData.message);
+      });
+      WSClient.waitForSocketConnection(() => setSelfLoading(false));
+      return () => {
+        WSClient.close();
+      };
+    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    return () => {};
+  }, [isAuthenticated, token]);
   const openMenu = Boolean(anchorEl);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>): void => {
@@ -141,6 +205,13 @@ export const Page: React.FunctionComponent<PageProps> = ({ children, pageTitle }
           <Typography variant="h6" className={classes.title}>
             {pageTitle}
           </Typography>
+          {!isAuthenticated && (
+            <MUILink component={LinkBehavior} color="inherit" underline="hover" href="login">
+              <Button color="inherit" startIcon={<AccountCircle />}>
+                LogIn
+              </Button>
+            </MUILink>
+          )}
           {isAuthenticated && (
             <div>
               <Button
@@ -149,7 +220,7 @@ export const Page: React.FunctionComponent<PageProps> = ({ children, pageTitle }
                 aria-haspopup="true"
                 onClick={handleMenu}
                 color="inherit"
-                startIcon={<AccountCircle />}
+                startIcon={<Avatar alt={`${user?.firstName} ${user?.lastName}`} src={user?.logo} />}
               >
                 {user?.firstName} {user?.lastName}
               </Button>
@@ -189,35 +260,7 @@ export const Page: React.FunctionComponent<PageProps> = ({ children, pageTitle }
           </IconButton>
         </div>
         <Divider />
-        <List>
-          <ListItem component={Link} button to="/">
-            <ListItemIcon>
-              <MailIcon />
-            </ListItemIcon>
-            <ListItemText primary="Lending" />
-          </ListItem>
-        </List>
-        {!isAuthenticated && (
-          <>
-            <Divider />
-            <List>
-              <ListItem component={Link} button to="/login">
-                <ListItemIcon>
-                  <Lock />
-                </ListItemIcon>
-                <ListItemText primary="Log in" />
-              </ListItem>
-            </List>
-            <List>
-              <ListItem component={Link} button to="/signup">
-                <ListItemIcon>
-                  <Lock />
-                </ListItemIcon>
-                <ListItemText primary="Sign up" />
-              </ListItem>
-            </List>
-          </>
-        )}
+        {!isAuthenticated && <UnAuthorisedMenu />}
       </Drawer>
       <main
         className={clsx(classes.content, {
@@ -225,6 +268,9 @@ export const Page: React.FunctionComponent<PageProps> = ({ children, pageTitle }
         })}
       >
         <div className={classes.drawerHeader} />
+        <Backdrop className={classes.backdrop} open={loading || selLoading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
         {children}
       </main>
     </div>
