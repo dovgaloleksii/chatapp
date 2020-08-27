@@ -1,4 +1,4 @@
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import {
   RequestConfig,
   APIConfig,
@@ -8,16 +8,24 @@ import {
   OAuthLoginRequest,
   StatusDetailResponse,
   SignUpRequest,
+  TokenRequest,
 } from '../../types';
 
 export abstract class AbstractAPI {
   public token: string;
 
+  public onNotAuthorisedRequest: (error: AxiosError) => void;
+
   protected constructor(config: APIConfig) {
     this.token = config.token;
+    this.onNotAuthorisedRequest = () => {
+      console.log('onNotAuthorisedRequest');
+    };
   }
 
-  abstract apiCall(requestConfig: RequestConfig): Promise<AxiosResponse>;
+  abstract apiCall<T>(requestConfig: RequestConfig): Promise<AxiosResponse<T>>;
+
+  abstract refreshToken(request: TokenRequest): Promise<AxiosResponse<TokenResponse>>;
 
   abstract login(request: LoginRequest): Promise<AxiosResponse<TokenResponse>>;
 

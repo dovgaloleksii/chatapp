@@ -20,7 +20,7 @@ class WebSocketClient {
   token = '';
 
   logger = (message: string): void => {
-    console.log(`[WebSocketClient] ${message}`, this);
+    console.log(`[WebSocketClient] ${message}`);
   };
 
   getWSUrl = (): string => {

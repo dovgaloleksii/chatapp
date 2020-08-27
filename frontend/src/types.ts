@@ -40,6 +40,10 @@ export interface OAuthLoginRequest {
   provider: OAuthProvider;
 }
 
+export interface TokenRequest {
+  token: string;
+}
+
 export interface TokenResponse {
   token: string;
 }

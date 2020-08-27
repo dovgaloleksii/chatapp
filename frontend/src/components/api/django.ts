@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { AbstractAPI } from './abstract';
 import {
   RequestConfig,
@@ -9,11 +9,14 @@ import {
   OAuthLoginRequest,
   StatusDetailResponse,
   SignUpRequest,
+  TokenRequest,
 } from '../../types';
 import { BASE_URL } from '../../constants';
 
 export class DjangoAPI extends AbstractAPI {
   api: AxiosInstance;
+
+  inRefreshState = false;
 
   constructor(config: APIConfig) {
     super(config);
@@ -34,12 +37,38 @@ export class DjangoAPI extends AbstractAPI {
     this.api = axios.create(axiosConfig);
   }
 
-  apiCall(requestConfig: RequestConfig): Promise<AxiosResponse> {
-    return this.api.request(requestConfig);
+  apiCall<T>(requestConfig: RequestConfig): Promise<AxiosResponse<T>> {
+    return this.api.request(requestConfig).catch(async (error: AxiosError) => {
+      if (error.response?.status === 401 && !this.inRefreshState) {
+        this.inRefreshState = true;
+        try {
+          const {
+            data: { token },
+          } = await this.refreshToken({ token: this.token });
+          this.token = token;
+          return this.apiCall<T>(requestConfig);
+        } catch (refreshError) {
+          this.onNotAuthorisedRequest(refreshError);
+          throw refreshError;
+        } finally {
+          this.inRefreshState = false;
+        }
+      } else {
+        throw error;
+      }
+    });
+  }
+
+  refreshToken(request: TokenRequest): Promise<AxiosResponse<TokenResponse>> {
+    return this.apiCall<TokenResponse>({
+      url: 'api/auth/token/refresh/',
+      method: 'POST',
+      data: request,
+    });
   }
 
   login(request: LoginRequest): Promise<AxiosResponse<TokenResponse>> {
-    return this.apiCall({
+    return this.apiCall<TokenResponse>({
       url: 'api/auth/token/',
       method: 'POST',
       data: request,
@@ -47,7 +76,7 @@ export class DjangoAPI extends AbstractAPI {
   }
 
   signUp(request: SignUpRequest): Promise<AxiosResponse<StatusDetailResponse>> {
-    return this.apiCall({
+    return this.apiCall<StatusDetailResponse>({
       url: 'api/auth/registration/',
       method: 'POST',
       data: {
@@ -63,7 +92,7 @@ export class DjangoAPI extends AbstractAPI {
   }
 
   confirmEmail(key: string): Promise<AxiosResponse<StatusDetailResponse>> {
-    return this.apiCall({
+    return this.apiCall<StatusDetailResponse>({
       url: 'api/auth/registration/verify-email/',
       method: 'POST',
       data: {
@@ -73,14 +102,14 @@ export class DjangoAPI extends AbstractAPI {
   }
 
   logout(): Promise<AxiosResponse<StatusDetailResponse>> {
-    return this.apiCall({
+    return this.apiCall<StatusDetailResponse>({
       url: 'api/auth/logout/',
       method: 'POST',
     });
   }
 
   oauthLogin(request: OAuthLoginRequest): Promise<AxiosResponse<TokenResponse>> {
-    return this.apiCall({
+    return this.apiCall<TokenResponse>({
       url: `api/auth/${request.provider}/`,
       method: 'POST',
       // eslint-disable-next-line @typescript-eslint/camelcase
@@ -89,7 +118,7 @@ export class DjangoAPI extends AbstractAPI {
   }
 
   getUser(): Promise<AxiosResponse<UserResponse>> {
-    return this.apiCall({
+    return this.apiCall<UserResponse>({
       url: 'api/auth/user/',
       method: 'GET',
     });

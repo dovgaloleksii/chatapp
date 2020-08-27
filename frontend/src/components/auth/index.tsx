@@ -14,6 +14,21 @@ export const ProvideAuth: React.FunctionComponent = ({ children }) => {
   const isAuthenticated = Boolean(token);
   const [api, setApi] = React.useState(getApi(API_PROVIDER, { token }));
 
+  useEffect(() => {
+    api.onNotAuthorisedRequest = () => {
+      console.log(jwtDecode(api.token));
+      setToken('');
+      setUser(null);
+      localStorage.removeItem('accessToken');
+    };
+  }, [api]);
+
+  useEffect(() => {
+    if (token !== api.token) {
+      setApi(getApi(API_PROVIDER, { token }));
+    }
+  }, [token, api]);
+
   const logout = React.useCallback(() => {
     return api
       .logout()
@@ -56,7 +71,6 @@ export const ProvideAuth: React.FunctionComponent = ({ children }) => {
         .then(({ data: { token: newToken } }) => {
           setToken(newToken);
           localStorage.setItem('accessToken', newToken);
-          console.log(jwtDecode(newToken));
           return newToken;
         });
     },
@@ -73,18 +87,11 @@ export const ProvideAuth: React.FunctionComponent = ({ children }) => {
         .then(({ data: { token: newToken } }) => {
           setToken(newToken);
           localStorage.setItem('accessToken', newToken);
-          console.log(jwtDecode(newToken));
           return newToken;
         });
     },
     [api],
   );
-
-  useEffect(() => {
-    if (token !== api.token) {
-      setApi(getApi(API_PROVIDER, { token }));
-    }
-  }, [token, api]);
 
   useEffect(() => {
     if (api.token) {
