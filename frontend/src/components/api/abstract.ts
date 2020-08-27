@@ -9,6 +9,7 @@ import {
   StatusDetailResponse,
   SignUpRequest,
   TokenRequest,
+  Chat,
 } from '../../types';
 
 export abstract class AbstractAPI {
@@ -38,4 +39,6 @@ export abstract class AbstractAPI {
   abstract logout(): Promise<AxiosResponse<StatusDetailResponse>>;
 
   abstract getUser(): Promise<AxiosResponse<UserResponse>>;
+
+  abstract getChats(): Promise<AxiosResponse<[Chat]>>;
 }

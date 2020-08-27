@@ -28,3 +28,23 @@ class Chat(models.Model):
     class Meta:
         verbose_name = _('Chat')
         verbose_name_plural = _('Chats')
+
+
+class Message(models.Model):
+    text = models.CharField(max_length=256)
+    author = models.ForeignKey(
+        'core.User',
+        on_delete=models.deletion.CASCADE,
+        related_name='messages',
+    )
+    chat = models.ForeignKey(
+        'chat.Chat',
+        on_delete=models.deletion.CASCADE,
+        related_name='messages',
+    )
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created', )
+        verbose_name = _('Message')
+        verbose_name_plural = _('Messages')

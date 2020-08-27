@@ -10,6 +10,7 @@ import {
   StatusDetailResponse,
   SignUpRequest,
   TokenRequest,
+  Chat,
 } from '../../types';
 import { BASE_URL } from '../../constants';
 
@@ -120,6 +121,13 @@ export class DjangoAPI extends AbstractAPI {
   getUser(): Promise<AxiosResponse<UserResponse>> {
     return this.apiCall<UserResponse>({
       url: 'api/auth/user/',
+      method: 'GET',
+    });
+  }
+
+  getChats(): Promise<AxiosResponse<[Chat]>> {
+    return this.apiCall<[Chat]>({
+      url: '/api/chat/chat/',
       method: 'GET',
     });
   }

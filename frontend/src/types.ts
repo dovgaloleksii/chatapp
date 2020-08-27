@@ -60,3 +60,26 @@ export interface UserResponse {
   first_name: string;
   last_name: string;
 }
+
+export interface User {
+  pk: number;
+  first_name: string;
+  last_name: string;
+  logo: string;
+  username: string;
+}
+
+export interface ChatUsers {
+  pk: number;
+  user: User;
+  created: string;
+}
+
+export interface Chat {
+  pk: number;
+  chat_users: [ChatUsers];
+  is_one_to_one: boolean;
+  name: string;
+  created: string;
+  last_message: string;
+}

@@ -1,13 +1,6 @@
 import React from 'react';
 import { AbstractAPI } from '../api/abstract';
-import { OAuthProvider } from '../../types';
-
-export interface User {
-  email: string;
-  logo: string;
-  firstName: string;
-  lastName: string;
-}
+import { OAuthProvider, User } from '../../types';
 
 interface AuthContextValue {
   isAuthenticated: boolean;
@@ -29,10 +22,13 @@ export const AuthContext = React.createContext<AuthContextValue>({
   logout: () => {},
   api: undefined,
   user: {
-    email: '',
+    pk: 0,
+    username: '',
     logo: '',
-    firstName: '',
-    lastName: '',
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    first_name: '',
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    last_name: '',
   },
 });
 

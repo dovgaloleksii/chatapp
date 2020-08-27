@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import jwtDecode from 'jwt-decode';
-import { AuthContext, User } from './context';
+import { AuthContext } from './context';
 import { getApi } from '../api';
-import { OAuthProvider } from '../../types';
+import { OAuthProvider, User } from '../../types';
 import { notifyError } from '../../utils';
 
 const API_PROVIDER = 'django';
@@ -49,12 +49,7 @@ export const ProvideAuth: React.FunctionComponent = ({ children }) => {
       api
         .getUser()
         .then(({ data }) => {
-          setUser({
-            firstName: data.first_name,
-            lastName: data.last_name,
-            logo: data.logo,
-            email: data.email,
-          });
+          setUser(data);
           return data;
         })
         .catch(notifyError);
