@@ -1,5 +1,9 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+
+from chat.utils import notify_ws_clients
 
 
 class ChatUser(models.Model):
@@ -48,3 +52,10 @@ class Message(models.Model):
         ordering = ('-created', )
         verbose_name = _('Message')
         verbose_name_plural = _('Messages')
+
+
+@receiver(post_save, sender=Message)
+def update_stock(sender, instance: Message, **kwargs):
+    users = instance.chat.users
+    for user in users.all():
+        notify_ws_clients(user, instance)

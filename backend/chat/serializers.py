@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from chat.models import Chat, ChatUser
+from chat.models import Chat, ChatUser, Message
 import logging
 
 from core.models import User
@@ -20,6 +20,17 @@ class ChatUsersSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ChatUser
         fields = ('pk', 'user', 'created', )
+
+
+class MessageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Message
+        fields = ('pk', 'text', 'author', 'created', )
+
+    def create(self, validated_data):
+        chat_id = self.context.get('chat_id')
+        return super().create(validated_data={**validated_data, "chat_id": chat_id})
 
 
 class ChatSerializer(serializers.ModelSerializer):

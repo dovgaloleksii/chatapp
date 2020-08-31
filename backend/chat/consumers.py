@@ -14,7 +14,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         self.room_name = self.scope['user'].pk
         self.room_group_name = f'User_{self.room_name}'
-        print(self.room_group_name, )
 
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -24,7 +23,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def receive(self, text_data=None, bytes_data=None):
-        print(text_data)
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         # Send message to room group
@@ -37,9 +35,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def receive_group_message(self, event):
-        print(event)
-        message = event['message']
-        await self.send(text_data=json.dumps({'message': message}))
+        await self.send(text_data=json.dumps(event))
 
     async def disconnect(self, message):
         await self.channel_layer.group_discard(

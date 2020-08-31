@@ -15,7 +15,7 @@ import { toast } from 'react-toastify';
 import { LinkBehavior } from '../../styled/link';
 import { useAuthContext } from '../../auth/context';
 import { WSClient } from '../../websocket';
-import { Chat } from '../../../types';
+import { Chat, Message } from '../../../types';
 import { notifyError } from '../../../utils';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -65,6 +65,12 @@ interface AuthorisedDrawerProps {
   setLoading?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+interface NewMessage {
+  chat?: number;
+  message?: Message;
+  type?: string;
+}
+
 export const AuthorisedDrawer: React.FunctionComponent<AuthorisedDrawerProps> = React.memo(
   ({ setLoading }) => {
     const { api, isAuthenticated, token, user } = useAuthContext();
@@ -76,22 +82,22 @@ export const AuthorisedDrawer: React.FunctionComponent<AuthorisedDrawerProps> = 
         api
           .getChats()
           .then(({ data }) => {
-            setChats(data);
+            setChats(data.results);
             return data;
           })
           .catch(notifyError);
       }
     }, [api]);
 
-    console.log(chats);
-
     React.useEffect(() => {
       if (isAuthenticated && setLoading) {
         setLoading(true);
         WSClient.token = token;
         WSClient.connect((message) => {
-          const messageData = JSON.parse(message.data);
-          toast.dark(messageData.message);
+          const messageData = JSON.parse(message.data) as NewMessage;
+          if (user?.pk !== messageData.message?.author) {
+            toast.dark(messageData.message?.text);
+          }
         });
         WSClient.waitForSocketConnection(() => setLoading(false));
         return () => {
@@ -100,7 +106,7 @@ export const AuthorisedDrawer: React.FunctionComponent<AuthorisedDrawerProps> = 
       }
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       return () => {};
-    }, [isAuthenticated, token, setLoading]);
+    }, [isAuthenticated, token, setLoading, user]);
 
     return (
       <>

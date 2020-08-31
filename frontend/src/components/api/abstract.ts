@@ -10,6 +10,9 @@ import {
   SignUpRequest,
   TokenRequest,
   Chat,
+  Paginated,
+  Message,
+  NewChatMessageRequest,
 } from '../../types';
 
 export abstract class AbstractAPI {
@@ -40,5 +43,11 @@ export abstract class AbstractAPI {
 
   abstract getUser(): Promise<AxiosResponse<UserResponse>>;
 
-  abstract getChats(): Promise<AxiosResponse<[Chat]>>;
+  abstract getChats(): Promise<AxiosResponse<Paginated<[Chat]>>>;
+
+  abstract getChat(chatId: string): Promise<AxiosResponse<Chat>>;
+
+  abstract getMessages(chatId: string): Promise<AxiosResponse<Paginated<[Message]>>>;
+
+  abstract createMessage(request: NewChatMessageRequest): Promise<AxiosResponse<Message>>;
 }

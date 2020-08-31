@@ -11,6 +11,9 @@ import {
   SignUpRequest,
   TokenRequest,
   Chat,
+  Paginated,
+  Message,
+  NewChatMessageRequest,
 } from '../../types';
 import { BASE_URL } from '../../constants';
 
@@ -125,10 +128,32 @@ export class DjangoAPI extends AbstractAPI {
     });
   }
 
-  getChats(): Promise<AxiosResponse<[Chat]>> {
-    return this.apiCall<[Chat]>({
-      url: '/api/chat/chat/',
+  getChats(): Promise<AxiosResponse<Paginated<[Chat]>>> {
+    return this.apiCall<Paginated<[Chat]>>({
+      url: '/api/chats/',
       method: 'GET',
+    });
+  }
+
+  getChat(chatId: string): Promise<AxiosResponse<Chat>> {
+    return this.apiCall<Chat>({
+      url: `/api/chats/${chatId}/`,
+      method: 'GET',
+    });
+  }
+
+  getMessages(chatId: string): Promise<AxiosResponse<Paginated<[Message]>>> {
+    return this.apiCall<Paginated<[Message]>>({
+      url: `/api/chats/${chatId}/messages/`,
+      method: 'GET',
+    });
+  }
+
+  createMessage(request: NewChatMessageRequest): Promise<AxiosResponse<Message>> {
+    return this.apiCall<Message>({
+      url: `/api/chats/${request.chatId}/messages/`,
+      method: 'POST',
+      data: { author: request.author, text: request.message },
     });
   }
 }

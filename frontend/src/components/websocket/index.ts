@@ -30,6 +30,14 @@ class WebSocketClient {
     return `${WS_SECURE}://${WS_URL}`;
   };
 
+  addEventListener = (type: string, listener: (this: WebSocket, ev: Event) => void): void => {
+    if (this.socketRef) this.socketRef.addEventListener(type, listener);
+  };
+
+  removeEventListener = (type: string, listener: (this: WebSocket, ev: Event) => void): void => {
+    if (this.socketRef) this.socketRef.removeEventListener(type, listener);
+  };
+
   connect = (onMessage: (message: MessageEvent) => void): void => {
     this.closed = false;
     const url = this.getWSUrl();

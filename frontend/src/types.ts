@@ -40,6 +40,12 @@ export interface OAuthLoginRequest {
   provider: OAuthProvider;
 }
 
+export interface NewChatMessageRequest {
+  chatId: number;
+  author: number;
+  message: string;
+}
+
 export interface TokenRequest {
   token: string;
 }
@@ -50,6 +56,13 @@ export interface TokenResponse {
 
 export interface StatusDetailResponse {
   detail: string;
+}
+
+export interface Paginated<Results> {
+  count: number;
+  next: string;
+  previous: string;
+  results: Results;
 }
 
 export interface UserResponse {
@@ -82,4 +95,11 @@ export interface Chat {
   name: string;
   created: string;
   last_message: string;
+}
+
+export interface Message {
+  pk: number;
+  text: string;
+  created: string;
+  author: number;
 }
